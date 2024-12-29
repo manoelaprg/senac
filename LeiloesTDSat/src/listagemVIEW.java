@@ -1,6 +1,7 @@
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 /*
@@ -137,16 +138,32 @@ public class listagemVIEW extends javax.swing.JFrame {
 
     private void btnVenderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVenderActionPerformed
         String id = id_produto_venda.getText();
+        ;
+        if (id != null && !id.trim().isEmpty()) {
+            try {
+                int produtoId = Integer.parseInt(id);
+                ProdutosDAO produtosdao = new ProdutosDAO();
+                ProdutosDTO produto = new ProdutosDTO();
+                produto.setId(produtoId);
 
-        ProdutosDAO produtosdao = new ProdutosDAO();
+                produtosdao.venderProduto(produto);
 
-        //produtosdao.venderProduto(Integer.parseInt(id));
-        listarProdutos();
+                listarProdutos();
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(null, "ID inválido. Por favor, insira um número válido.");
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "Por favor, insira o ID do produto.");
+        }
+
+    
+
     }//GEN-LAST:event_btnVenderActionPerformed
 
     private void btnVendasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVendasActionPerformed
-        //vendasVIEW vendas = new vendasVIEW(); 
-        //vendas.setVisible(true);
+        vendasVIEW vendas = new vendasVIEW();
+        vendas.setVisible(true);
+        
     }//GEN-LAST:event_btnVendasActionPerformed
 
     private void btnVoltarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVoltarActionPerformed
@@ -167,16 +184,28 @@ public class listagemVIEW extends javax.swing.JFrame {
                 if ("Nimbus".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
-                }
+
+}
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(listagemVIEW.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(listagemVIEW.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(listagemVIEW.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(listagemVIEW.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(listagemVIEW.class  
+
+.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
+} catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(listagemVIEW.class  
+
+.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
+} catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(listagemVIEW.class  
+
+.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
+} catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(listagemVIEW.class  
+
+.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
@@ -214,15 +243,14 @@ public class listagemVIEW extends javax.swing.JFrame {
     void listarProdutos() {
         try {
             ProdutosDAO produtosdao = new ProdutosDAO();
-            
+
             produtosdao.conectar();
 
-            
             String[] c = {"ID", "Nome", "Valor", "Status"};
             DefaultTableModel model = new DefaultTableModel(null, c);
 
             listaProdutos.setModel(model);
-            model.setNumRows(0); 
+            model.setNumRows(0);
 
             List<ProdutosDTO> listagem = produtosdao.listarProdutos();
 
@@ -241,7 +269,7 @@ public class listagemVIEW extends javax.swing.JFrame {
                 });
                 System.out.println("Adicionado produto: " + p.getNome());
             }
-            
+
             produtosdao.desconectar();
 
         } catch (Exception e) {
