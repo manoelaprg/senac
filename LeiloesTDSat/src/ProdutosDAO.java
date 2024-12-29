@@ -1,12 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 
-/**
- *
- * @author Adm
- */
 import java.sql.PreparedStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -38,7 +30,7 @@ public class ProdutosDAO {
             return false;
         }
     }
-    
+
     public void desconectar() {
         try {
             if (conn != null && !conn.isClosed()) {
@@ -49,7 +41,6 @@ public class ProdutosDAO {
             System.out.println("Erro ao fechar a conexão: " + e.getMessage());
         }
     }
-    
 
     public void cadastrarProduto(ProdutosDTO p) {
         String sql = "INSERT INTO produtos (nome, valor, status) VALUES (?, ?, ?)";
@@ -104,7 +95,7 @@ public class ProdutosDAO {
                     p.setNome(rs.getString("nome"));
                     p.setValor(rs.getInt("valor"));
                     p.setStatus(rs.getString("status"));
-                    
+
                     listagem.add(p);
                 }
             }
@@ -126,5 +117,69 @@ public class ProdutosDAO {
         }
     }
 
-   
+    public void venderProduto(ProdutosDTO p) {
+        String sql = ("UPDATE produtos SET status = 'Vendido' WHERE id =?");
+
+        try {
+            if (conectar()) {
+                prep = conn.prepareStatement(sql);
+                prep.setInt(1, p.getId());
+                int result = prep.executeUpdate();
+
+                if (result > 0) {
+                    JOptionPane.showMessageDialog(null, "Produto vendido com sucesso!");
+                } else {
+                    JOptionPane.showMessageDialog(null, "Erro ao vender produto!");
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "Falha na conexão com o banco");
+            }
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, "Erro SQL: " + ex.getMessage());
+        } finally {
+            try {
+                if (prep != null) {
+                    prep.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException ex) {
+                System.out.println("Erro ao fechar conexão");
+            }
+        }
+
+    }
+
+    public List<ProdutosDTO> produtosVendidos() {
+        List<ProdutosDTO> produtosVendidos = new ArrayList<>();
+        String sql = "SELECT * FROM produtos WHERE status = 'Vendido'";  
+
+        try {
+            if (conectar()) {
+                prep = conn.prepareStatement(sql);
+                rs = prep.executeQuery();
+
+                if (!rs.isBeforeFirst()) {
+                    System.out.println("Nenhum produto vendido encontrado.");
+                } else {
+                    while (rs.next()) {
+                        ProdutosDTO p = new ProdutosDTO();
+                        p.setId(rs.getInt("id"));
+                        p.setNome(rs.getString("nome"));
+                        p.setValor(rs.getInt("valor"));
+                        p.setStatus(rs.getString("status"));
+                        produtosVendidos.add(p);
+                    }
+                }
+            }
+        } catch (SQLException ex) {
+            System.out.println("Erro ao consultar venda de produtos: " + ex.getMessage());
+        } finally {
+            desconectar();  
+
+        return produtosVendidos;
+    }
+
+}
 }
