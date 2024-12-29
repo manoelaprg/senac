@@ -38,6 +38,18 @@ public class ProdutosDAO {
             return false;
         }
     }
+    
+    public void desconectar() {
+        try {
+            if (conn != null && !conn.isClosed()) {
+                conn.close();
+                System.out.println("Conexão fechada.");
+            }
+        } catch (SQLException e) {
+            System.out.println("Erro ao fechar a conexão: " + e.getMessage());
+        }
+    }
+    
 
     public void cadastrarProduto(ProdutosDTO p) {
         String sql = "INSERT INTO produtos (nome, valor, status) VALUES (?, ?, ?)";
@@ -77,26 +89,42 @@ public class ProdutosDAO {
 
     }
 
-    public ArrayList<ProdutosDTO> listarProdutos() {
+    public List<ProdutosDTO> listarProdutos() {
         List<ProdutosDTO> listagem = new ArrayList<>();
         try {
             prep = conn.prepareStatement("SELECT * FROM produtos");
-
             rs = prep.executeQuery();
-            while (rs.next()) {
-                ProdutosDTO p = new ProdutosDTO();
-                p.setNome(rs.getString("nome"));
-                p.setStatus(rs.getString("status"));
-                p.setValor(rs.getInt("valor"));
-                listagem.add(p);
-            }
 
+            if (!rs.isBeforeFirst()) {
+                System.out.println("Nenhum produto encontrado.");
+            } else {
+                while (rs.next()) {
+                    ProdutosDTO p = new ProdutosDTO();
+                    p.setId(rs.getInt("id"));
+                    p.setNome(rs.getString("nome"));
+                    p.setValor(rs.getInt("valor"));
+                    p.setStatus(rs.getString("status"));
+                    
+                    listagem.add(p);
+                }
+            }
         } catch (SQLException ex) {
-            System.out.println("Erro ao consultar produtos" + ex.getMessage());
-        } 
-    
-        return (ArrayList<ProdutosDTO>) listagem;
-    
-}
-}
+            System.out.println("Erro ao consultar produtos: " + ex.getMessage());
+        }
+
+        return listagem;
+    }
+
+    public void produtosLista() {
+        List<ProdutosDTO> lista = listarProdutos();
+
+        for (ProdutosDTO p : lista) {
+            System.out.println("ID: " + p.getId());
+            System.out.println("Nome: " + p.getNome());
+            System.out.println("Valor: " + p.getValor());
+            System.out.println("Status: " + p.getStatus());
+        }
+    }
+
    
+}
